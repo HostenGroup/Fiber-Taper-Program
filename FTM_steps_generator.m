@@ -195,3 +195,6 @@ legend('Turning Points', 'Flame velocity');
 grid on;
 
     
+
+
+% Uploading trial from Matlab to Github
