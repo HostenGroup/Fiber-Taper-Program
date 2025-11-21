@@ -18,8 +18,7 @@ function [T] = Write_steps(num_steps,x_total,x_values,L_values,z_values,r_values
           L_steps_mm = interp1(x_values, L_values, elongation);
     else
         % Exponential or variable taper
-          L_steps_mm_verf = L0 + (alpha * elongation);
-          [L_steps_mm] = Nozzle_limit(L_steps_mm_verf, FTM_limits);
+          L_steps_mm = L0 + (alpha * elongation);
     end
 
     % Estimated radio per step
@@ -30,9 +29,12 @@ function [T] = Write_steps(num_steps,x_total,x_values,L_values,z_values,r_values
     % Velocity required for the flame to complete each step-trip
         [Flame_speed] = Heating_speed(Taper, alpha, Fixtures_speed, num_steps,x_total,L_steps_mm,FTM_limits);
 
+    % Nozzle size verification
+    [L_steps_mm_verf] = Nozzle_limit(L_steps_mm, FTM_limits);
+
     % --- Final table with input for FTM ---
     Program_Step = steps;
-    HeaterLength_mm = round(L_steps_mm, 2);
+    HeaterLength_mm = round(L_steps_mm_verf, 2);
     TaperLength_acummulated_mm = round(elongation, 2);
     TaperLength_no_acummulated_mm = round(no_accumulated_elongation,2);
     ApproxFormedRadius_um = round(radious_steps_um, 2);

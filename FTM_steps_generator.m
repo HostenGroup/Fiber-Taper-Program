@@ -80,7 +80,7 @@ Fixtures_speed = 5;     % Fixture velocity (per side) [mm/min]
             [z0,z_values,r_values,integral_values] = Linear_Taper_Profile_generator(r0,rw,Omega_rad);
         
             % ____ Heating Length L(z)____
-            [L_values,L0] = Heater_length_equation_solver(z_values,integral_values,rw,r_values,lw_mm,FTM_limits);
+            [L_values,L0] = Heater_length_equation_solver(z_values,integral_values,rw,r_values,lw_mm);
         
             % ____ Elongation x(z)____ 
             [x_values,x_total] = Elongation_length_solver(z_values,L_values,L0,FTM_limits);

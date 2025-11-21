@@ -41,10 +41,7 @@ function [z0, x_total, L0, z_values, r_values, x_values, L_values] = Exponential
        % Generate the z-coordinate values for a variable profile
         z_values = linspace(0, z0, 500);
         x_values = (2 * z_values) / (1 - alpha);
-        L_values_raw = L0 + (alpha*x_values);
-
-       % Evaluation of L due to real nozzle size limitation
-        [L_values] = Nozzle_limit(L_values_raw, FTM_limits);
+        L_values = L0 + (alpha*x_values);
 
      % --- Radius as function of z-coordinate:---
 

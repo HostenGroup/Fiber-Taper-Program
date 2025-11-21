@@ -15,35 +15,35 @@ function FTM_app()
                     'Position', [15 670 270 22], 'FontSize', 13, 'FontWeight', 'bold');
             
             % Choose the desired profile
-            uilabel(controlPanel, 'Text', 'Taper Profile:', 'Position', [15 640 140 22]); % Ancho 140
+            uilabel(controlPanel, 'Text', 'Taper Profile:', 'Position', [15 640 140 22]); % Width 140
             app.TaperType = uidropdown(controlPanel, 'Items', {'Exponential (alpha)', 'Linear (Omega)'}, ...
                                         'Value', 'Exponential (alpha)', ...
-                                        'Position', [160 640 120 22], ... % Izq 160, Ancho 120
+                                        'Position', [160 640 120 22], ... % Left 160, Width 120
                                         'ValueChangedFcn', @(src, event) parametersChanged(src, event, @toggleParams)); 
            
             % Input the Untapered Fiber diameter (Initial Taper)                          
-            uilabel(controlPanel, 'Text', 'Initial Diameter (d₀) [μm]:', 'Position', [15 610 140 22]); % Ancho 140
-            app.d0_um = uieditfield(controlPanel, 'numeric', 'Value', 125, 'Position', [160 610 120 22], ... % Izq 160, Ancho 120
+            uilabel(controlPanel, 'Text', 'Initial Diameter (d₀) [μm]:', 'Position', [15 610 140 22]); % Width 140
+            app.d0_um = uieditfield(controlPanel, 'numeric', 'Value', 125, 'Position', [160 610 120 22], ... % Left 160, Width 120
                                     'ValueChangedFcn', @parametersChanged);
             
             % Input the desired waist diameter    
-            uilabel(controlPanel, 'Text', 'Waist Diameter (dᵥ) [μm]:', 'Position', [15 580 140 22]); % Ancho 140
-            app.dw_um = uieditfield(controlPanel, 'numeric', 'Value', 1, 'Position', [160 580 120 22], ... % Izq 160, Ancho 120
+            uilabel(controlPanel, 'Text', 'Waist Diameter (dᵥ) [μm]:', 'Position', [15 580 140 22]); % Width 140
+            app.dw_um = uieditfield(controlPanel, 'numeric', 'Value', 1, 'Position', [160 580 120 22], ... % Left 160, Width 120
                                     'ValueChangedFcn', @parametersChanged);
             
            % Input the desired waist length    
-            uilabel(controlPanel, 'Text', 'Waist Length (lᵥ) [mm]:', 'Position', [15 550 140 22]); % Ancho 140
-            app.desired_lw_mm = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 550 120 22], ... % Izq 160, Ancho 120
+            uilabel(controlPanel, 'Text', 'Waist Length (lᵥ) [mm]:', 'Position', [15 550 140 22]); % Width 140
+            app.desired_lw_mm = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 550 120 22], ... % Left 160, Width 120
                                             'ValueChangedFcn', @parametersChanged);
             
             % Input the desired Taper Angle Omega
-            app.LinearLabel = uilabel(controlPanel, 'Text', 'Taper Angle (Ω) [mrad]:', 'Position', [15 520 140 22], 'Visible', 'off'); % Ancho 140
-            app.Omega_mrad = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 520 120 22], 'Visible', 'off', ... % Izq 160, Ancho 120
+            app.LinearLabel = uilabel(controlPanel, 'Text', 'Taper Angle (Ω) [mrad]:', 'Position', [15 520 140 22], 'Visible', 'off'); % Width 140
+            app.Omega_mrad = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 520 120 22], 'Visible', 'off', ... % Left 160, Width 120
                                          'ValueChangedFcn', @parametersChanged);
             
             % Input the alha parameter
-            app.ExpLabel = uilabel(controlPanel, 'Text', 'Alpha Parameter (α):', 'Position', [15 520 140 22], 'Visible', 'on'); % Ancho 140
-            app.alpha = uieditfield(controlPanel, 'numeric', 'Value', 0, 'Position', [160 520 120 22], 'Visible', 'on', ... % Izq 160, Ancho 120
+            app.ExpLabel = uilabel(controlPanel, 'Text', 'Alpha Parameter (α):', 'Position', [15 520 140 22], 'Visible', 'on'); % Width 140
+            app.alpha = uieditfield(controlPanel, 'numeric', 'Value', 0, 'Position', [160 520 120 22], 'Visible', 'on', ... % Left 160, Width 120
                                     'ValueChangedFcn', @parametersChanged);
             
     % --- 2. FTM Parameters ---
@@ -53,30 +53,30 @@ function FTM_app()
             
             % Input the desired number of steps
             uilabel(controlPanel, 'Text', 'Number of Steps:', 'Position', [15 450 140 22]); % Ancho 140
-            app.num_steps = uieditfield(controlPanel, 'numeric', 'Value', 25, 'Position', [160 450 120 22], ... % Izq 160, Ancho 120
+            app.num_steps = uieditfield(controlPanel, 'numeric', 'Value', 25, 'Position', [160 450 120 22], ... % Left 160, Width 120
                                         'ValueChangedFcn', @parametersChanged);
             
             % Input the Heater Speed (I may be able to change it at some point for a more general way
-            uilabel(controlPanel, 'Text', 'Heater Speed [mm/min]:', 'Position', [15 420 140 22]); % Ancho 140
-            app.Heater_speed = uieditfield(controlPanel, 'numeric', 'Value', 75, 'Position', [160 420 120 22], ... % Izq 160, Ancho 120
+            uilabel(controlPanel, 'Text', 'Heater Speed [mm/min]:', 'Position', [15 420 140 22]); % Width 140
+            app.Heater_speed = uieditfield(controlPanel, 'numeric', 'Value', 75, 'Position', [160 420 120 22], ... % Left 160, Width 120
                                            'ValueChangedFcn', @parametersChanged);
            
             % Input a desired Fixture Speed
             uilabel(controlPanel, 'Text', 'Fixtures Speed [mm/min]:', 'Position', [15 390 140 22]); % Ancho 140
-            app.Fixtures_speed = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 390 120 22], ... % Izq 160, Ancho 120
+            app.Fixtures_speed = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 390 120 22], ... % Left 160, Width 120
                                              'ValueChangedFcn', @parametersChanged);
             
             % Input the H2 Flow
             uilabel(controlPanel, 'Text', 'H₂ Flow [sccm]:', 'Position', [15 360 140 22]); % Ancho 140
-            app.H2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 80, 'Position', [160 360 120 22], ... % Izq 160, Ancho 120
+            app.H2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 80, 'Position', [160 360 120 22], ... % Left 160, Width 120
                                       'ValueChangedFcn', @parametersChanged);
             
             % Input the O2 flow 
             uilabel(controlPanel, 'Text', 'O₂ Flow [sccm]:', 'Position', [15 330 140 22]); % Ancho 140
-            app.O2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 40, 'Position', [160 330 120 22], ... % Izq 160, Ancho 120
+            app.O2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 40, 'Position', [160 330 120 22], ... % Left 160, Width 120
                                       'ValueChangedFcn', @parametersChanged);
 
-    % --- Button for 'Steps Gneration' ---
+    % --- Button for 'Steps Generation' ---
     app.runButton = uibutton(controlPanel, 'Text', 'Generate Steps', ...
                              'Position', [15 290 270 30], 'FontSize', 14, 'FontWeight', 'bold', ...
                              'ButtonPushedFcn', @generateButtonPushed);
