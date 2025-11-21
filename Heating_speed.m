@@ -1,10 +1,11 @@
     
 function [Flame_speed, P_turning_points] = Heating_speed(Taper, alpha, Fixtures_speed, num_steps,x_total,HeaterLength_mm,FTM_limits)
-    if Taper == 1 && alpha >= 0 && alpha < 1  % Exponential
+    % Exponential
+    if Taper == 1 && alpha >= 0 && alpha < 1  
         constant_speed = Fixtures_speed * 15;
         Flame_speed = ones(num_steps, 1) * constant_speed;
         [P_turning_points] = Flame_trips(Fixtures_speed, num_steps, x_total,HeaterLength_mm);
-
+    % Lineal
     else 
         [P_turning_points, Flame_speed] = Flame_trips(Fixtures_speed, num_steps, x_total,HeaterLength_mm);
     end
