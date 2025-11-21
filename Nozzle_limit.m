@@ -3,15 +3,15 @@
 % stationary technique. This may produce the fiber get tapered into
 % an undesired shape (e.g. smoother)
 
-function [L_values] = Nozzle_limit(L_values_raw, FTM_limits)
+function [L_steps_mm_verf] = Nozzle_limit(L_values, FTM_limits)
 
     % Nozzle limit for the Brush technique
-    for j = 1:length(L_values_raw)
-        if L_values_raw(j) < FTM_limits.Nozzle_size
-           L_values_raw(j) = FTM_limits.Nozzle_size;
+    for j = 1:length(L_values)
+        if L_values(j) < FTM_limits.Nozzle_size
+           L_values(j) = FTM_limits.Nozzle_size;
         end 
     end
-    L_values = L_values_raw;
+    L_steps_mm_verf = L_values;
 
        % L_values = max(L_values_raw, FTM_limits.Nozzle_size);
 
