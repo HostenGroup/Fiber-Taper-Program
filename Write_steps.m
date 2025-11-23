@@ -35,13 +35,13 @@ function [T] = Write_steps(num_steps,x_total,x_values,L_values,z_values,r_values
     % --- Final table with input for FTM ---
     Program_Step = steps;
     HeaterLength_mm = round(L_steps_mm_verf, 2);
-    TaperLength_acummulated_mm = round(elongation, 2);
+    %TaperLength_acummulated_mm = round(elongation, 2);
     TaperLength_no_acummulated_mm = round(no_accumulated_elongation,2);
     ApproxFormedRadius_um = round(radious_steps_um, 2);
     Estimated_z_mm = round(z_steps_mm,2);
     Flame_speed = round(Flame_speed,2);
 
-    T = table(Program_Step, HeaterLength_mm, TaperLength_acummulated_mm, TaperLength_no_acummulated_mm, ApproxFormedRadius_um*2, Estimated_z_mm, Flame_speed);
-    T.Properties.VariableNames = {'Step', 'HeaterLength_mm', 'TaperLength_acummulated_mm', 'TaperLength_no_acummulated_mm','Estimated_Diameter_um','Estimated_z_mm','Flame_speed'};
+    T = table(Program_Step, HeaterLength_mm, TaperLength_no_acummulated_mm, ApproxFormedRadius_um*2, Estimated_z_mm, Flame_speed);
+    T.Properties.VariableNames = {'Step', 'HeaterLength_mm', 'TaperLength_no_acummulated_mm','Estimated_Diameter_um','Estimated_z_mm','Flame_speed'};
 
 end 
