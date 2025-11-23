@@ -1,180 +1,223 @@
+
+% % 1. create a buttom for the fixture distance input.
+% 
+% % 2. Create a message for displaying the necesity of verifying the fixture
+% % distance to check the available space for elongation
+% 
+% % 3. Delete de input of the velocity of the heating length
+% 
+% % 4. Include the Manual section in a second tab
+% 
+% % 5. Include the Q&A section in a third tab
+% 
+% % Check the callback function/buttom to avoid the interface freezing after
+% % an error message appears
+% 
+% % Try the programs with no pre-heating, with new velocity change for
+% % alpha=variable, and normal minimal nozzle size (analize that or how to
+% % check it)?
+% 
+
+
 function FTM_app()
-    % --- Creates the Main UI Figure ---
-    fig = uifigure('Name', 'FTM Step Generator', 'Position', [0 0 1200 750]);
-    
+% =========================================================================
+% User Interface 
+% =========================================================================
+
+% --- Creates the Main UI Figure ---
+    fig = uifigure('Name', 'FTM Step Generator', 'Position', [0 0 1200 760]);
+    % position [Left, Bottom, Width, Height]
+
     % --- Center the screen ---
     movegui(fig, 'center');
 
+    % Tabs
+        tabGroup = uitabgroup(fig, 'Position', [0 0 1200 760]);
+
+        % 1. Main Tab (Input/output)
+            mainTab = uitab(tabGroup, 'Title', 'Steps Generator');
+    
+        % 2. Manual Tab
+            manualTab = uitab(tabGroup, 'Title', 'Manual');
+            uilabel(manualTab, 'Text', 'Manual will be here', 'Position', [500 375 200 20]);
+        
+        % 3. Q&A tab
+            faTab = uitab(tabGroup, 'Title', 'Q&A');
+            uilabel(faTab, 'Text', 'Q&A will be here', 'Position', [500 375 200 20]);
+
+    % =========================================================================
+    % Tab 1 Interface: Step Generator ('mainTab')
+    % =========================================================================
+
     % --- Control Panel (Left) ---
-    controlPanel = uipanel(fig, 'Title', 'Simulation & FTM Parameters', ...
+        controlPanel = uipanel(mainTab, 'Title', 'Simulation & FTM Parameters', ...
                            'Position', [20 20 300 710], 'FontSize', 14); 
     %% --- Environemnt --- 
 
     % --- 1. Simulation Setup: Ask for inputs ---
-            uilabel(controlPanel, 'Text', '1. Simulation Setup', ...
-                    'Position', [15 670 270 22], 'FontSize', 13, 'FontWeight', 'bold');
+            uilabel(controlPanel, 'Text', 'Fiber features', ...
+                    'Position', [15 665 270 14], 'FontSize', 13, 'FontWeight', 'bold');
             
             % Choose the desired profile
-            uilabel(controlPanel, 'Text', 'Taper Profile:', 'Position', [15 640 140 22]); % Width 140
-            app.TaperType = uidropdown(controlPanel, 'Items', {'Exponential (alpha)', 'Linear (Omega)'}, ...
-                                        'Value', 'Exponential (alpha)', ...
-                                        'Position', [160 640 120 22], ... % Left 160, Width 120
-                                        'ValueChangedFcn', @(src, event) parametersChanged(src, event, @toggleParams)); 
+            uilabel(controlPanel, 'Text', 'Taper Profile:', 'Position', [15 636 140 18]); 
+            FTM_app.TaperType = uidropdown(controlPanel, 'Items', {'Exponential (alpha)', 'Linear (Omega)'}, ...
+                                           'Value', 'Exponential (alpha)', ...
+                                           'Position', [160 636 120 18], ... 
+                                           'ValueChangedFcn', @(src, event) parametersChanged(src, event, @toggleParams)); 
            
-            % Input the Untapered Fiber diameter (Initial Taper)                          
-            uilabel(controlPanel, 'Text', 'Initial Diameter (d₀) [μm]:', 'Position', [15 610 140 22]); % Width 140
-            app.d0_um = uieditfield(controlPanel, 'numeric', 'Value', 125, 'Position', [160 610 120 22], ... % Left 160, Width 120
+            % Input the Untapered Fiber diameter (Initial Taper)                           
+            uilabel(controlPanel, 'Text', 'Initial Diameter (d₀) [μm]:', 'Position', [15 606 140 18]); % Width 140
+            FTM_app.d0_um = uieditfield(controlPanel, 'numeric', 'Value', 125, 'Position', [160 606 120 18], ... % Left 160, Width 120
                                     'ValueChangedFcn', @parametersChanged);
             
             % Input the desired waist diameter    
-            uilabel(controlPanel, 'Text', 'Waist Diameter (dᵥ) [μm]:', 'Position', [15 580 140 22]); % Width 140
-            app.dw_um = uieditfield(controlPanel, 'numeric', 'Value', 1, 'Position', [160 580 120 22], ... % Left 160, Width 120
+            uilabel(controlPanel, 'Text', 'Waist Diameter (dᵥ) [μm]:', 'Position', [15 576 140 18]); % Width 140
+            FTM_app.dw_um = uieditfield(controlPanel, 'numeric', 'Value', 1, 'Position', [160 576 120 18], ... % Left 160, Width 120
                                     'ValueChangedFcn', @parametersChanged);
             
            % Input the desired waist length    
-            uilabel(controlPanel, 'Text', 'Waist Length (lᵥ) [mm]:', 'Position', [15 550 140 22]); % Width 140
-            app.desired_lw_mm = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 550 120 22], ... % Left 160, Width 120
-                                            'ValueChangedFcn', @parametersChanged);
+            uilabel(controlPanel, 'Text', 'Waist Length (lᵥ) [mm]:', 'Position', [15 546 140 18]); % Width 140
+            FTM_app.desired_lw_mm = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 546 120 18], ... % Left 160, Width 120
+                                                'ValueChangedFcn', @parametersChanged);
             
             % Input the desired Taper Angle Omega
-            app.LinearLabel = uilabel(controlPanel, 'Text', 'Taper Angle (Ω) [mrad]:', 'Position', [15 520 140 22], 'Visible', 'off'); % Width 140
-            app.Omega_mrad = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 520 120 22], 'Visible', 'off', ... % Left 160, Width 120
-                                         'ValueChangedFcn', @parametersChanged);
+            FTM_app.LinearLabel = uilabel(controlPanel, 'Text', 'Taper Angle (Ω) [mrad]:', 'Position', [15 514 140 18], 'Visible', 'off'); % Width 140
+            FTM_app.Omega_mrad = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 514 120 18], 'Visible', 'off', ... % Left 160, Width 120
+                                                'ValueChangedFcn', @parametersChanged);
             
             % Input the alha parameter
-            app.ExpLabel = uilabel(controlPanel, 'Text', 'Alpha Parameter (α):', 'Position', [15 520 140 22], 'Visible', 'on'); % Width 140
-            app.alpha = uieditfield(controlPanel, 'numeric', 'Value', 0, 'Position', [160 520 120 22], 'Visible', 'on', ... % Left 160, Width 120
+            FTM_app.ExpLabel = uilabel(controlPanel, 'Text', 'Alpha Parameter (α):', 'Position', [15 514 140 18], 'Visible', 'on'); % Width 140
+            FTM_app.alpha = uieditfield(controlPanel, 'numeric', 'Value', 0, 'Position', [160 514 120 18], 'Visible', 'on', ... % Left 160, Width 120
                                     'ValueChangedFcn', @parametersChanged);
             
     % --- 2. FTM Parameters ---
             % FTM 
-            uilabel(controlPanel, 'Text', '2. FTM Parameters', ...
-                    'Position', [15 480 270 22], 'FontSize', 13, 'FontWeight', 'bold');
+            uilabel(controlPanel, 'Text', 'FTM Parameters', ...
+                    'Position', [15 480 270 18], 'FontSize', 13, 'FontWeight', 'bold');
             
             % Input the desired number of steps
-            uilabel(controlPanel, 'Text', 'Number of Steps:', 'Position', [15 450 140 22]); % Ancho 140
-            app.num_steps = uieditfield(controlPanel, 'numeric', 'Value', 25, 'Position', [160 450 120 22], ... % Left 160, Width 120
-                                        'ValueChangedFcn', @parametersChanged);
+            uilabel(controlPanel, 'Text', 'Number of Steps:', 'Position', [15 450 140 18]); % Ancho 140
+            FTM_app.num_steps = uieditfield(controlPanel, 'numeric', 'Value', 25, 'Position', [160 450 120 18], ... % Left 160, Width 120
+                                            'ValueChangedFcn', @parametersChanged);
             
             % Input the Heater Speed (I may be able to change it at some point for a more general way
-            uilabel(controlPanel, 'Text', 'Heater Speed [mm/min]:', 'Position', [15 420 140 22]); % Width 140
-            app.Heater_speed = uieditfield(controlPanel, 'numeric', 'Value', 75, 'Position', [160 420 120 22], ... % Left 160, Width 120
-                                           'ValueChangedFcn', @parametersChanged);
+            uilabel(controlPanel, 'Text', 'Heater Speed [mm/min]:', 'Position', [15 420 140 18]); % Width 140
+            FTM_app.Heater_speed = uieditfield(controlPanel, 'numeric', 'Value', 75, 'Position', [160 420 120 18], ... % Left 160, Width 120
+                                                 'ValueChangedFcn', @parametersChanged);
            
             % Input a desired Fixture Speed
-            uilabel(controlPanel, 'Text', 'Fixtures Speed [mm/min]:', 'Position', [15 390 140 22]); % Ancho 140
-            app.Fixtures_speed = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 390 120 22], ... % Left 160, Width 120
-                                             'ValueChangedFcn', @parametersChanged);
+            uilabel(controlPanel, 'Text', 'Fixtures Speed [mm/min]:', 'Position', [15 390 140 18]); % Ancho 140
+            FTM_app.Fixtures_speed = uieditfield(controlPanel, 'numeric', 'Value', 5, 'Position', [160 390 120 18], ... % Left 160, Width 120
+                                                     'ValueChangedFcn', @parametersChanged);
             
             % Input the H2 Flow
-            uilabel(controlPanel, 'Text', 'H₂ Flow [sccm]:', 'Position', [15 360 140 22]); % Ancho 140
-            app.H2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 80, 'Position', [160 360 120 22], ... % Left 160, Width 120
+            uilabel(controlPanel, 'Text', 'H₂ Flow [sccm]:', 'Position', [15 360 140 18]); % Ancho 140
+            FTM_app.H2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 80, 'Position', [160 360 120 18], ... % Left 160, Width 120
                                       'ValueChangedFcn', @parametersChanged);
             
             % Input the O2 flow 
-            uilabel(controlPanel, 'Text', 'O₂ Flow [sccm]:', 'Position', [15 330 140 22]); % Ancho 140
-            app.O2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 40, 'Position', [160 330 120 22], ... % Left 160, Width 120
+            uilabel(controlPanel, 'Text', 'O₂ Flow [sccm]:', 'Position', [15 330 140 18]); % Ancho 140
+            FTM_app.O2_Flow = uieditfield(controlPanel, 'numeric', 'Value', 40, 'Position', [160 330 120 18], ... % Left 160, Width 120
                                       'ValueChangedFcn', @parametersChanged);
 
     % --- Button for 'Steps Generation' ---
-    app.runButton = uibutton(controlPanel, 'Text', 'Generate Steps', ...
+    FTM_app.runButton = uibutton(controlPanel, 'Text', 'Generate Steps', ...
                              'Position', [15 290 270 30], 'FontSize', 14, 'FontWeight', 'bold', ...
                              'ButtonPushedFcn', @generateButtonPushed);
                              
     %% --- Results & Comments section ---
         uilabel(controlPanel, 'Text', 'Key Results & Comments', ...
                 'Position', [15 258 270 22], 'FontSize', 13, 'FontWeight', 'bold');
-        app.resultsArea = uitextarea(controlPanel, 'Value', {'Press "Generate Steps" to see the results.'}, ...
+        FTM_app.resultsArea = uitextarea(controlPanel, 'Value', {'Press "Generate Steps" to see the results.'}, ...
                                      'Position', [15 170 270 80], 'Editable', 'off', 'FontSize', 12);
 
         % --- Export Panel ---
-        % The idea is to export the program in 2 formats: XML and Excel
+        % The idea is to export the program in 2 formats XML and Excel to
+        % make it available for he program and for the user observation/comments section
     
         exportPanel = uipanel(controlPanel, 'Title', '4. Export Data', ...
                               'Position', [15 10 270 150], 'FontSize', 13, 'FontWeight', 'bold'); 
         
         uilabel(exportPanel, 'Text', 'Path:', 'Position', [5 95 40 22]);
-        app.outputPath = uieditfield(exportPanel, 'text', 'Value', pwd, ... 
+        FTM_app.outputPath = uieditfield(exportPanel, 'text', 'Value', pwd, ... 
                                      'Position', [50 95 160 22], 'Editable', 'off'); 
-        app.browseButton = uibutton(exportPanel, 'Text', 'Browse...', ...
+        FTM_app.browseButton = uibutton(exportPanel, 'Text', 'Browse...', ...
                                     'Position', [215 95 50 22], ... 
                                     'ButtonPushedFcn', @browseButtonPushed);
         
         % Input for the desired name for the file
         uilabel(exportPanel, 'Text', 'Filename:', 'Position', [5 60 60 22]); 
-        app.output_filename = uieditfield(exportPanel, 'text', ...
-                                          'Value', 'T3_profile', ...
-                                          'Position', [70 60 195 22]); 
+        FTM_app.output_filename = uieditfield(exportPanel, 'text', ...
+                                              'Value', 'T3_profile', ...
+                                              'Position', [70 60 195 22]); 
     
         % XML Export buttom
-        app.exportXMLButton = uibutton(exportPanel, 'Text', 'XML', ...
-                                       'Position', [10 15 120 25], 'Enable', 'off', ... 
-                                       'ButtonPushedFcn', @exportXMLButtonPushed);
+        FTM_app.exportXMLButton = uibutton(exportPanel, 'Text', 'XML', ...
+                                     'Position', [10 15 120 25], 'Enable', 'off', ... 
+                                     'ButtonPushedFcn', @exportXMLButtonPushed);
         % Excel Export buttom
-        app.exportExcelButton = uibutton(exportPanel, 'Text', 'Excel', ...
+        FTM_app.exportExcelButton = uibutton(exportPanel, 'Text', 'Excel', ...
                                          'Position', [140 15 120 25], 'Enable', 'off', ... 
                                          'ButtonPushedFcn', @exportExcelButtonPushed);
                                          
-        app.exportStatus = uilabel(exportPanel, 'Text', '', ... % Hidden
+        FTM_app.exportStatus = uilabel(exportPanel, 'Text', '', ... % Hidden
                                    'Position', [10 -10 1 1], 'Visible', 'off');
 
     %%  --- Results section ---
-        
-        plotPanel = uipanel(fig, 'Title', 'Result Plots', ...
+                
+        plotPanel = uipanel(mainTab, 'Title', 'Result Plots', ...
                             'Position', [340 280 840 450], 'FontSize', 14); 
         
+        %% We can erase this panel
         % Figure 1: 'Hot zone vs. Elongation'
-        app.ax1 = uiaxes(plotPanel, 'Position', [30 240 380 190]); 
-        title(app.ax1, 'Hot zone vs. Elongation');
-        xlabel(app.ax1, 'x: Elongation (mm)');
-        ylabel(app.ax1, 'Hot-zone size (mm)');
+        FTM_app.ax1 = uiaxes(plotPanel, 'Position', [30 232 380 190]); 
+        title(FTM_app.ax1, 'Hot zone vs. Elongation');
+        xlabel(FTM_app.ax1, 'x: Elongation (mm)');
+        ylabel(FTM_app.ax1, 'Hot-zone size (mm)');
+        %%
 
-        % Figure 2: 'Elongation vs. Diameter'      
-        app.ax2 = uiaxes(plotPanel, 'Position', [430 240 380 190]); 
-        title(app.ax2, 'Elongation vs. Diameter');
-        xlabel(app.ax2, 'x: Elongation (mm)');
-        ylabel(app.ax2, 'Diameter (μm)');
+        % Figure 2: 'Elongation vs. Diameter'       
+        FTM_app.ax2 = uiaxes(plotPanel, 'Position', [430 232 380 190]); 
+        title(FTM_app.ax2, 'Elongation vs. Diameter');
+        xlabel(FTM_app.ax2, 'x: Elongation (mm)');
+        ylabel(FTM_app.ax2, 'Diameter (μm)');
         
         % Figure 3: 'Geometric Profile'
-        app.ax3 = uiaxes(plotPanel, 'Position', [30 30 380 190]); 
-        title(app.ax3, 'Geometric Profile');
-        xlabel(app.ax3, 'Position z (mm)');
-        ylabel(app.ax3, 'Diameter (μm)');
+        FTM_app.ax3 = uiaxes(plotPanel, 'Position', [30 20 380 190]); 
+        title(FTM_app.ax3, 'Geometric Profile');
+        xlabel(FTM_app.ax3, 'Position z (mm)');
+        ylabel(FTM_app.ax3, 'Diameter (μm)');
 
         % Figure 4: 'Flame Features'
-        app.ax4 = uiaxes(plotPanel, 'Position', [430 30 380 190]); 
-        title(app.ax4, 'Flame Features');
-        xlabel(app.ax4, 'Flame trip number (i)');
-        yyaxis(app.ax4, 'left');
-        ylabel(app.ax4, 'Flame Position (mm)');
-        app.ax4.YColor = 'b';
-        yyaxis(app.ax4, 'right');
-        ylabel(app.ax4, 'Flame Velocity (mm/min)');
-        app.ax4.YColor = 'k';
+        FTM_app.ax4 = uiaxes(plotPanel, 'Position', [430 20 380 190]); 
+        title(FTM_app.ax4, 'Flame Features');
+        xlabel(FTM_app.ax4, 'Flame trip number (i)');
+        yyaxis(FTM_app.ax4, 'left');
+        ylabel(FTM_app.ax4, 'Flame Position (mm)');
+        FTM_app.ax4.YColor = 'b';
+        yyaxis(FTM_app.ax4, 'right');
+        ylabel(FTM_app.ax4, 'Flame Velocity (mm/min)');
+        FTM_app.ax4.YColor = 'k';
     
-    % --- Table Panel (Inferior, movido hacia arriba) ---
-        tablePanel = uipanel(fig, 'Title', 'Generated Steps (Table T)', ...
+    % --- Table Panel ---
+        tablePanel = uipanel(mainTab, 'Title', 'Input for FTM', ...
                              'Position', [340 20 840 250], 'FontSize', 14); 
                              
-        app.stepsTable = uitable(tablePanel, 'Position', [10 10 820 230]); 
+        FTM_app.stepsTable = uitable(tablePanel, 'Position', [10 01 820 220]); 
                              
     % --- Store app structure and initial export path ---
-        app.exportParams.Path = pwd; % Store initial path
-        fig.UserData = app;
+        FTM_app.exportParams.Path = pwd; % Store initial path
+        fig.UserData = FTM_app;
         
     % Initial call to set visibility
-        toggleParams(app.TaperType, []);
+        toggleParams(FTM_app.TaperType, []);
 
    
 end
 %% --- Callback functions ---
 
-% --- Callback to disable export buttons if parameters change ---
-
-        % I have to include a button that allow me to return to the
-        % configuration when an error occurs, so that I do not need to open and
-        % run the program again
-
+% --- Disable export buttons if parameters change ---
+      
         function parametersChanged(src, event, optionalCallback)
             fig = getFigHandle(src);
             if isempty(fig), return; end 
@@ -219,7 +262,9 @@ function generateButtonPushed(src, ~)
     app.runButton.Text = 'Generating...';
     app.runButton.Enable = 'off';
     drawnow;
-
+% =========================================================================
+% Calculations
+% =========================================================================
     try
         % --- 1. Collect Inputs from UI ---
         if strcmp(app.TaperType.Value, 'Exponential (alpha)')
@@ -247,8 +292,9 @@ function generateButtonPushed(src, ~)
 
         if Taper == 0
             [z0, z_values, r_values, integral_values] = Linear_Taper_Profile_generator(r0, rw, Omega_rad);
-            [L_values, L0] = Heater_length_equation_solver(z_values, integral_values, rw, r_values, lw_mm, FTM_limits);
+            [L_values, L0] = Heater_length_equation_solver(z_values, integral_values, rw, r_values, lw_mm);
             [x_values, x_total] = Elongation_length_solver(z_values, L_values, L0, FTM_limits);
+            
                 
         elseif Taper == 1
             [z0, x_total, L0, z_values, r_values, x_values, L_values] = Exponential_Lalpha_Taper_Profile_generator(r0, rw, alpha, lw_mm, FTM_limits);        
@@ -283,17 +329,23 @@ function generateButtonPushed(src, ~)
         % --- Steps Table ---
         app.stepsTable.Data = T;
         app.stepsTable.ColumnName = T.Properties.VariableNames;
+%         % Format for decimals (still figure it out)
+%         num_columns = width(T);
+%         col_formats = repmat({'bank'}, 1, num_columns); % Pone todo en 2 decimales
+%         col_formats{1} = 'numeric'; % Mantiene la columna 'Step' como entero
+%         app.stepsTable.ColumnFormat = col_formats;
+%         app.stepsTable.Data = table2cell(T);
         
         % --- Plot 1: Hot zone vs Elongation ---
-        plot(app.ax1, T.TaperLength_acummulated_mm, T.HeaterLength_mm, 'o-');
+        plot(app.ax1, cumsum(T.TaperLength_no_acummulated_mm), T.HeaterLength_mm, 'o-');
         title(app.ax1, 'Hot zone vs. Elongation');
         xlabel(app.ax1, 'x: Elongation (mm)');
         ylabel(app.ax1, 'Hot-zone size (mm)');
         grid(app.ax1, 'on');
 
         % --- Plot 2: Elongation vs Fiber Diameter ---
-        plot(app.ax2, T.TaperLength_acummulated_mm, T.Estimated_Diameter_um, 'o-');
-        title(app.ax2, 'Elongation vs. Diameter');
+        plot(app.ax2, cumsum(T.TaperLength_no_acummulated_mm), T.Estimated_Diameter_um, 'o-');
+        title(app.ax2, 'Diameter Profile');
         xlabel(app.ax2, 'x: Elongation (mm)');
         ylabel(app.ax2, 'Diameter (μm)');
         grid(app.ax2, 'on');
@@ -339,14 +391,24 @@ function generateButtonPushed(src, ~)
         % app.exportStatus.Text = 'Ready to export.';
         
     catch ME
-        % Error Handling
+               
+        % Mostramos el error en la interfaz
         app.resultsArea.Value = {'ERROR!', ME.message};
-        rethrow(ME); % Rethrow error to console for debugging
+        
+        % Opcional: Mostrar una alerta visual (pop-up)
+        %uialert(fig, ME.message, 'Execution Error');
+        
+        app.runButton.Text = 'Generate Steps';
+        app.runButton.Enable = 'on';
+        
+        % disp(getReport(ME)); 
     end
     
-    % Restore button
-    app.runButton.Text = 'Generate Steps';
-    app.runButton.Enable = 'on';
+    % Restore button (for success case)
+    if strcmp(app.runButton.Enable, 'off')
+        app.runButton.Text = 'Generate Steps';
+        app.runButton.Enable = 'on';
+    end
 end
 
 % --- Callback Function: Browse for Path ---
@@ -427,4 +489,5 @@ function fig = getFigHandle(src)
     end
     fig = parent;
 end
+
 
